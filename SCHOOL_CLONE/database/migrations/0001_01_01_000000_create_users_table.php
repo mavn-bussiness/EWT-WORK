@@ -80,7 +80,7 @@ return new class extends Migration
             $table->string('subject');
             $table->string('qualification');
             $table->string('phoneNumber');
-            $table->date('employment_date')->nullable(); // When teacher was hired
+            $table->date('employment_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

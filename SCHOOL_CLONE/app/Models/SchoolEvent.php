@@ -22,7 +22,9 @@ class SchoolEvent extends Model
         'end_time',
         'location',
         'organizer_id',
+        'is_approved',
     ];
+    
 
     /**
      * The attributes that should be cast.

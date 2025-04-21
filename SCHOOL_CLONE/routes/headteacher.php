@@ -11,6 +11,7 @@ Route::middleware(['auth', 'verified', 'role:headteacher'])
         // Dashboard
         Route::get('/dashboard', [HeadteacherController::class, 'dashboard'])->name('dashboard');
         
+        
         // Staff Management
         Route::prefix('staff')->name('staff.')->group(function () {
             // DOS Routes
@@ -19,6 +20,8 @@ Route::middleware(['auth', 'verified', 'role:headteacher'])
             Route::get('/dos/{deanOfStudent}/edit', [HeadteacherController::class, 'editDos'])->name('edit.dos');
             Route::put('/dos/{deanOfStudent}', [HeadteacherController::class, 'updateDos'])->name('update.dos');
             Route::delete('/dos/{deanOfStudent}', [HeadteacherController::class, 'deleteDos'])->name('delete.dos');
+            Route::post('/dos/promote', [HeadteacherController::class, 'promoteToDos'])->name('promote.dos');
+            Route::delete('/dos/{teacher}/demote', [HeadteacherController::class, 'demoteDos'])->name('demote.dos');
             
             // Bursar Routes
             Route::get('/bursars', [HeadteacherController::class, 'bursarsIndex'])->name('bursars');
@@ -46,6 +49,7 @@ Route::middleware(['auth', 'verified', 'role:headteacher'])
         // School Calendar Management
         Route::prefix('events')->name('events.')->group(function () {
             Route::get('/', [HeadteacherController::class, 'manageSchoolEvents'])->name('index');
+            Route::get('/{event}/show',[HeadteacherController::class,'showEvent'])->name('show');
             Route::post('/', [HeadteacherController::class, 'storeEvent'])->name('store');
             Route::post('/{event}/approve', [HeadteacherController::class, 'approveSchoolEvent'])->name('approve');
         });

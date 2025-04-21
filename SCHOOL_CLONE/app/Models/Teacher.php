@@ -19,6 +19,8 @@ class Teacher extends Model
         'employment_date',
         'specialization',
         'department',
+        'is_dos',
+        'dos_department'
     ];
 
     protected $casts = [

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Manage School Events') }}
+            {{ __('School Events Management') }}
         </h2>
     </x-slot>
 
@@ -11,10 +11,6 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-semibold">School Events</h3>
-                        
-                        <a href="{{ route('admin.events.create') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                            Add New Event
-                        </a>
                     </div>
 
                     @if (session('success'))
@@ -38,6 +34,7 @@
                                     <th class="py-3 px-4 text-left">Time</th>
                                     <th class="py-3 px-4 text-left">Location</th>
                                     <th class="py-3 px-4 text-left">Organizer</th>
+                                    <th class="py-3 px-4 text-left">Status</th>
                                     <th class="py-3 px-4 text-left">Actions</th>
                                 </tr>
                             </thead>
@@ -59,20 +56,25 @@
                                         <td class="py-3 px-4">{{ $event->location ?? 'N/A' }}</td>
                                         <td class="py-3 px-4">{{ $event->organizer->firstName }} {{ $event->organizer->lastName }}</td>
                                         <td class="py-3 px-4">
+                                            @if($event->is_approved)
+                                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Approved</span>
+                                            @else
+                                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pending</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-3 px-4">
                                             <div class="flex space-x-2">
-                                                <a href="{{ route('admin.events.show', $event->id) }}" class="text-blue-600 hover:text-blue-800">
+                                                <a href="{{ route('headteacher.events.show', $event->id) }}" class="text-blue-600 hover:text-blue-800">
                                                     View
                                                 </a>
-                                                <a href="{{ route('admin.events.edit', $event->id) }}" class="text-yellow-600 hover:text-yellow-800">
-                                                    Edit
-                                                </a>
-                                                <form action="{{ route('admin.events.delete', $event->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this event?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-800">
-                                                        Delete
-                                                    </button>
-                                                </form>
+                                                @if(!$event->is_approved)
+                                                    <form action="{{ route('headteacher.events.approve', $event->id) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <button type="submit" class="text-green-600 hover:text-green-800">
+                                                            Approve
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -80,11 +82,15 @@
 
                                 @if(count($events) == 0)
                                     <tr class="border-t">
-                                        <td colspan="6" class="py-3 px-4 text-center text-gray-500">No events found</td>
+                                        <td colspan="7" class="py-3 px-4 text-center text-gray-500">No events found</td>
                                     </tr>
                                 @endif
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <div class="mt-4">
+                        {{ $events->links() }}
                     </div>
                 </div>
             </div>

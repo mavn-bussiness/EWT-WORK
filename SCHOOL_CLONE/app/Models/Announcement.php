@@ -16,12 +16,14 @@ class Announcement extends Model
         'posted_by',
         'audience',
         'publish_date',
+        'expiry_date',
+        'attachment_path',
         'is_active'
     ];
 
     protected $casts = [
-        'audience' => 'array',
         'publish_date' => 'datetime',
+        'expiry_date' => 'datetime',
         'is_active' => 'boolean'
     ];
 
