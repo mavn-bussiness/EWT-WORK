@@ -15,8 +15,8 @@ class DeanOfStudent extends Model
     protected $fillable = [
         'user_id',
         'staffId',
-        'designation',
-        'responsibilities'
+        'department',
+        'phoneNumber'
     ];
 
     public function user()

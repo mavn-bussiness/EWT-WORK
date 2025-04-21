@@ -17,4 +17,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth'])->group(function () {
+    // Password change routes for first login
+    Route::get('/change-password', [PasswordChangeController::class, 'showChangeForm'])
+        ->name('password.change');
+    Route::post('/change-password', [PasswordChangeController::class, 'update'])
+        ->name('password.update');
+});
+
 require __DIR__.'/auth.php';

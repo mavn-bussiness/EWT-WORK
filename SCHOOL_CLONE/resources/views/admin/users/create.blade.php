@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Create User') }}
+            {{ __('Create Head Teacher') }}
         </h2>
     </x-slot>
 
@@ -38,39 +38,16 @@
                         <!-- Email -->
                         <div class="mb-6">
                             <x-input-label for="email" :value="__('Email')" />
-                            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" />
+                            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
 
-                        <!-- Role -->
+                        <!-- Hidden Role field - always headteacher -->
+                        <input type="hidden" name="role" value="headteacher">
+                        
+                        <!-- Password info notice -->
                         <div class="mb-6">
-                            <x-input-label for="role" :value="__('Role')" />
-                            <select id="role" name="role" class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full">
-                                <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
-                                <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Teacher</option>
-                                <option value="parent" {{ old('role') == 'parent' ? 'selected' : '' }}>Parent</option>
-                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="headteacher" {{ old('role') == 'headteacher' ? 'selected' : '' }}>Head Teacher</option>
-                                <option value="bursar" {{ old('role') == 'bursar' ? 'selected' : '' }}>Bursar</option>
-                                <option value="dos" {{ old('role') == 'dos' ? 'selected' : '' }}>DOS</option>
-                                <option value="librarian" {{ old('role') == 'librarian' ? 'selected' : '' }}>Librarian</option>
-                            </select>
-                            <x-input-error :messages="$errors->get('role')" class="mt-2" />
-                        </div>
-
-                        <!-- Password -->
-                        <div class="mb-6">
-                            <x-input-label for="password" :value="__('Password')" />
-                            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" />
-                            <p class="text-sm text-gray-500 mt-1">Required for admin, teacher, headteacher, bursar, dos, and librarian roles</p>
-                            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div class="mb-6">
-                            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-                            <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" />
-                            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                            <p class="text-sm text-gray-500">A default password will be generated from the user's first and last name.</p>
                         </div>
 
                         <!-- Profile Photo -->
@@ -85,18 +62,10 @@
                             <x-input-error :messages="$errors->get('profile_photo')" class="mt-2" />
                         </div>
 
-                        <!-- Is Active -->
-                        <div class="mb-6">
-                            <label for="is_active" class="inline-flex items-center">
-                                <input id="is_active" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" name="is_active" checked>
-                                <span class="ml-2 text-sm text-gray-600">{{ __('Active') }}</span>
-                            </label>
-                        </div>
-
                         <div class="flex items-center justify-end">
                             <a href="{{ route('admin.users.index') }}" class="text-sm text-gray-600 underline mr-4">Cancel</a>
                             <x-primary-button>
-                                {{ __('Create User') }}
+                                {{ __('Create Head Teacher') }}
                             </x-primary-button>
                         </div>
                     </form>

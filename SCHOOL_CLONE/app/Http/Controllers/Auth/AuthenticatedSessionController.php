@@ -22,44 +22,66 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
+   /**
+ * Handle an incoming authentication request.
+ */
+public function store(LoginRequest $request): RedirectResponse
+{
+    $request->authenticate();
 
-        $request->session()->regenerate();
-
-        // Redirect based on user role
-        if ($request->user()->role === 'admin') {
-            return redirect()->intended(route('admin.dashboard', absolute: false));
-        } elseif ($request->user()->role === 'headteacher') {
-            return redirect()->intended(route('headteacher.dashboard', absolute: false));
-        } elseif ($request->user()->role === 'teacher') {
-            return redirect()->intended(route('teacher.dashboard', absolute: false));
-        } elseif ($request->user()->role === 'bursar') {
-            return redirect()->intended(route('bursar.dashboard', absolute: false));
-        } elseif ($request->user()->role === 'dos') {
-            return redirect()->intended(route('dos.dashboard', absolute: false));
-        } elseif ($request->user()->role === 'librarian') {
-            return redirect()->intended(route('librarian.dashboard', absolute: false));
-        } elseif ($request->user()->role === 'parent') {
-            return redirect()->intended(route('parent.dashboard', absolute: false));
-        } else {
-            // Default for students or any other role
-            return redirect()->intended(route('dashboard', absolute: false));
-        }
+    $request->session()->regenerate();
+    
+    // Update user's active status
+    $user = Auth::user();
+    $user->is_active = true;
+    $user->save();
+    
+    // Check if user needs to change password
+    if ($user->requires_password_change) {
+        return redirect()->route('password.change');
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+    // Redirect based on user role
+    if ($request->user()->role === 'admin') {
+        return redirect()->intended(route('admin.dashboard', absolute: false));
+    } elseif ($request->user()->role === 'headteacher') {
+        return redirect()->intended(route('headteacher.dashboard', absolute: false));
+    } elseif ($request->user()->role === 'teacher') {
+        return redirect()->intended(route('teacher.dashboard', absolute: false));
+    } elseif ($request->user()->role === 'bursar') {
+        return redirect()->intended(route('bursar.dashboard', absolute: false));
+    } elseif ($request->user()->role === 'dos') {
+        return redirect()->intended(route('dos.dashboard', absolute: false));
+    } elseif ($request->user()->role === 'librarian') {
+        return redirect()->intended(route('librarian.dashboard', absolute: false));
+    } elseif ($request->user()->role === 'parent') {
+        return redirect()->intended(route('parent.dashboard', absolute: false));
+    } else {
+        // Default for students or any other role
+        return redirect()->intended(route('dashboard', absolute: false));
     }
+}
+
+/**
+ * Destroy an authenticated session.
+ */
+public function destroy(Request $request): RedirectResponse
+{
+    // Set user as inactive when logged out
+    $user = Auth::user();
+    if ($user) {
+        $user->is_active = false;
+        $user->save();
+    }
+    
+    Auth::guard('web')->logout();
+
+    $request->session()->invalidate();
+
+    $request->session()->regenerateToken();
+
+    return redirect('/');
+}
+
+  
 }

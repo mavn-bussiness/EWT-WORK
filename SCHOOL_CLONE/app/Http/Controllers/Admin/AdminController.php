@@ -50,27 +50,39 @@ class AdminController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'firstName' => ['required', 'string', 'max:255'],
-            'lastName' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'role' => ['required', 'string', 'in:admin,teacher,student,headteacher,dos'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+{
+    $validatedData = $request->validate([
+        'firstName' => ['required', 'string', 'max:255'],
+        'lastName' => ['required', 'string', 'max:255'],
+        'otherName' => ['nullable', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        'role' => ['required', 'string', 'in:headteacher'], // Only allow headteacher role
+        'profile_photo' => ['nullable', 'image', 'max:2048'],
+    ]);
 
-        $user = User::create([
-            'firstName' => $validatedData['firstName'],
-            'lastName' => $validatedData['lastName'],
-            'email' => $validatedData['email'],
-            'role' => $validatedData['role'],
-            'password' => Hash::make($validatedData['password']),
-        ]);
-
-        return redirect()->route('admin.dashboard')
-            ->with('success', 'User created successfully.');
+    // Generate default password from first and last name in lowercase
+    $defaultPassword = strtolower($validatedData['firstName'] . $validatedData['lastName']);
+    
+    $profilePhotoPath = null;
+    if ($request->hasFile('profile_photo')) {
+        $profilePhotoPath = $request->file('profile_photo')->store('profile-photos', 'public');
     }
 
+    $user = User::create([
+        'firstName' => $validatedData['firstName'],
+        'lastName' => $validatedData['lastName'],
+        'otherName' => $validatedData['otherName'] ?? null,
+        'email' => $validatedData['email'],
+        'role' => $validatedData['role'],
+        'password' => Hash::make($defaultPassword),
+        'profile_photo' => $profilePhotoPath,
+        'is_active' => false, // Default to inactive (not logged in)
+        'requires_password_change' => true, // Mark for password change on first login
+    ]);
+
+    return redirect()->route('admin.users.index')
+        ->with('success', "Head Teacher created successfully. Default password is {$defaultPassword}");
+}
     public function show($id)
     {
         $user = User::findOrFail($id);
