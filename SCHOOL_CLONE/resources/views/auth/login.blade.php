@@ -3,7 +3,16 @@
         <div class="backdrop-blur-lg bg-white/10 border border-[var(--aws-border)] rounded-2xl shadow-2xl w-full max-w-md p-8 sm:p-10 transition-all duration-300">
             <!-- Branding -->
             <div class="text-center mb-8">
-                <p class="text-sm text-[var(--aws-text-light)] mt-2">Sign in to continue</p>
+                <div class="flex justify-center items-center mb-4">
+                    <svg viewBox="0 0 316 316" class="w-10 h-10 mr-2 text-[var(--aws-orange)]" xmlns="http://www.w3.org/2000/svg">
+                        <path class="fill-[var(--aws-orange)]" d="M60 200 C60 180, 80 160, 158 160 C236 160, 256 180, 256 200 V240 C256 260, 236 280, 158 280 C80 280, 60 260, 60 240 V200 Z"/>
+                        <path class="fill-[var(--aws-text-light)]" d="M80 200 C80 190, 90 180, 158 180 C226 180, 236 190, 236 200 V230 C236 240, 226 250, 158 250 C90 250, 80 240, 80 230 V200 Z"/>
+                        <path class="fill-[var(--aws-navy)]" d="M148 120 H168 V160 H148 Z"/>
+                        <path class="fill-[var(--aws-orange)]" d="M158 80 C150 80, 146 90, 148 100 C150 110, 166 110, 168 100 C170 90, 166 80, 158 80 Z"/>
+                    </svg>
+                    <h1 class="text-2xl font-semibold text-white">The S.M.S</h1>
+                </div>
+                <p class="text-sm text-[var(--aws-text-light)]">Sign in to continue</p>
             </div>
 
             <!-- Session Status -->
@@ -61,7 +70,7 @@
                             class="text-[var(--aws-orange)] hover:text-[var(--aws-orange-hover)] transition-colors duration-200"
                             href="{{ route('password.request') }}"
                         >
-                            Forgot?
+                            Forgot Password?
                         </a>
                     @endif
                 </div>
@@ -89,6 +98,8 @@
             --aws-text-light: #d1d5db;
             --aws-green: #10b981;
             --aws-red: #ef4444;
+            --aws-yellow: #facc15;
+            --aws-blue: #3b82f6;
         }
 
         .aws-label {
@@ -140,4 +151,34 @@
             transform: translateY(0);
         }
     </style>
+
+    @push('styles')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    @endpush
+
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+        @if(session('success'))
+            <script>
+                Toastify({
+                    text: "{{ session('success') }}",
+                    duration: 3000,
+                    style: {
+                        background: "linear-gradient(to right, var(--aws-green), var(--aws-blue))"
+                    }
+                }).showToast();
+            </script>
+        @endif
+        @if(session('error'))
+            <script>
+                Toastify({
+                    text: "{{ session('error') }}",
+                    duration: 3000,
+                    style: {
+                        background: "linear-gradient(to right, var(--aws-red), var(--aws-yellow))"
+                    }
+                }).showToast();
+            </script>
+        @endif
+    @endpush
 </x-guest-layout>

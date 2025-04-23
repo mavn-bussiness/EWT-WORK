@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendance;
 use App\Models\Term;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,12 +11,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
-//        $teacher = Auth::user()->teacher;
+        $teacher = Auth::user()->teacher;
 
-        // Check if the user has a teacher record
-//        if (!$teacher) {
-//            return redirect()->route('login')->with('error', 'Unauthorized access. You are not a teacher.');
-//        }
+//         Check if the user has a teacher record
+        if (!$teacher) {
+            return redirect()->route('login')->with('error', 'Unauthorized access. You are not a teacher.');
+        }
 
         $term = Term::where('is_current', true)->first();
 
@@ -44,7 +45,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $attendancePending = \App\Models\Attendance::whereIn('class_id', $teacher->subjects()->pluck('class_id')) // Changed here
+        $attendancePending = Attendance::whereIn('class_id', $teacher->subjects()->pluck('class_id')) // Changed here
         ->where('date', now()->format('Y-m-d'))
             ->whereNull('status')
             ->exists();

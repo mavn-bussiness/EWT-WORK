@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\ClassRegistration;
 use App\Models\SchoolClass;
+use App\Models\Student;
+use App\Models\Term;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +16,7 @@ class AttendanceController extends Controller
     public function index()
     {
         $teacher = Auth::user()->teacher;
-        $term = \App\Models\Term::where('is_current', true)->first();
+        $term = Term::where('is_current', true)->first();
         if (!$term) {
             return back()->with('error', 'No active term found.');
         }
@@ -31,7 +34,7 @@ class AttendanceController extends Controller
     public function mark($classId)
     {
         $teacher = Auth::user()->teacher;
-        $term = \App\Models\Term::where('is_current', true)->first();
+        $term = Term::where('is_current', true)->first();
         if (!$term) {
             abort(500, 'No active term found.');
         }
@@ -46,15 +49,15 @@ class AttendanceController extends Controller
         }
 
         $class = SchoolClass::findOrFail($classId);
-        $studentIds = \App\Models\ClassRegistration::where('class_id', $classId)
+        $studentIds = ClassRegistration::where('class_id', $classId)
             ->where('term_id', $term->id)
             ->where('status', 'registered')
             ->pluck('student_id')
             ->toArray();
 
-        $students = \App\Models\Student::whereIn('id', $studentIds)
+        $students = Student::whereIn('id', $studentIds)
             ->whereNull('deleted_at')
-            ->with(['user', 'attendance' => fn($query) => $query->where('date', now()->format('Y-m-d'))->where('class_id', $classId)])
+            ->with(['user', 'attendances' => fn($query) => $query->where('date', now()->format('Y-m-d'))->where('class_id', $classId)])
             ->get();
 
         return view('teacher.attendance.mark', compact('class', 'students'));
@@ -63,7 +66,7 @@ class AttendanceController extends Controller
     public function store(Request $request, $classId)
     {
         $teacher = Auth::user()->teacher;
-        $term = \App\Models\Term::where('is_current', true)->first();
+        $term = Term::where('is_current', true)->first();
         if (!$term) {
             return back()->with('error', 'No active term found.');
         }

@@ -19,6 +19,7 @@ class Attendance extends Model
     protected $casts = [
         'date' => 'date',
     ];
+    protected $table='attendance';
 
     public function student(): BelongsTo
     {

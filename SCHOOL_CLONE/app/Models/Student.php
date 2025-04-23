@@ -82,4 +82,5 @@ class Student extends Model
     {
         return now()->diffInYears($this->dateOfBirth);
     }
+
 }
