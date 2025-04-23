@@ -49,4 +49,11 @@ protected $fillable = [
             'password' => 'hashed',
         ];
     }
+    /**
+ * Get the bursar record associated with the user.
+ */
+public function bursar()
+{
+    return $this->hasOne(Bursar::class);
+}
 }

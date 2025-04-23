@@ -13,7 +13,8 @@ class FeeStructure extends Model
     protected $fillable = [
         'term_id',
         'class_level',
-        'tuition_fee',
+        'tuition',
+        'boarding',
         'development',
         'uniform',
         'meals',
@@ -22,7 +23,7 @@ class FeeStructure extends Model
     ];
 
     protected $casts = [
-        'tuition_fee' => 'decimal:2',
+        'tuition' => 'decimal:2',
         'development' => 'decimal:2',
         'uniform' => 'decimal:2',
         'meals' => 'decimal:2',

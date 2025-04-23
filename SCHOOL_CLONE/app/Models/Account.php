@@ -23,8 +23,15 @@ class Account extends Model
         'is_active' => 'boolean',
     ];
 
+    // Scope for active accounts
+    public static function active()
+    {
+        return self::where('is_active', true);
+    }
+
     public function transactions(): HasMany
     {
         return $this->hasMany(FinancialTransaction::class);
     }
 }
+

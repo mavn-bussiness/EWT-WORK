@@ -1,156 +1,122 @@
-<x-layout title="Fee Management">
-    <div class="container-fluid px-4">
-        <h1 class="mt-4">Fee Management</h1>
-        <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item"><a href="{{ route('bursar.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Fees</li>
-        </ol>
-
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
+```blade
+<x-app-layout title="Fee Report">
+    <div class="container-fluid px-4 py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="mb-1 h3 fw-bold">Fee Report</h1>
+                <p class="text-muted mb-0">From {{ $summary['start_date'] ?? 'N/A' }} to {{ $summary['end_date'] ?? 'N/A' }}</p>
             </div>
-        @endif
-
-        @if(session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
+            <div>
+                <a href="{{ route('bursar.reports.generate') }}" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Generate Report
+                </a>
+                <a href="{{ route('bursar.reports.download', $summary['report_id']) }}" class="btn btn-primary">
+                    <i class="fas fa-download me-1"></i> Download Report
+                </a>
             </div>
-        @endif
+        </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-money-bill me-1"></i>
-                All Fees
-                <a href="{{ route('bursar.fees.create') }}" class="btn btn-primary btn-sm float-end">Add New Fee</a>
+        <!-- Summary Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-muted">Total Billed</h5>
+                        <p class="h4">{{ number_format($summary['total_billed'], 2) }} {{ config('app.currency', 'USD') }}</p>
+                    </div>
+                </div>
             </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-muted">Total Paid</h5>
+                        <p class="h4">{{ number_format($summary['total_paid'], 2) }} {{ config('app.currency', 'USD') }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-muted">Total Outstanding</h5>
+                        <p class="h4">{{ number_format($summary['total_outstanding'], 2) }} {{ config('app.currency', 'USD') }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-muted">Collection Rate</h5>
+                        <p class="h4">{{ number_format($summary['collection_rate'], 2) }}%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fee Details Table -->
+        <div class="card shadow-sm">
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="feesTable">
-                        <thead>
+                @if($fees->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
                             <tr>
-                                <th>ID</th>
                                 <th>Student</th>
                                 <th>Term</th>
-                                <th>Total Amount</th>
-                                <th>Paid Amount</th>
-                                <th>Balance</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Class Level</th>
+                                <th>Total Amount ({{ config('app.currency', 'USD') }})</th>
+                                <th>Paid Amount ({{ config('app.currency', 'USD') }})</th>
+                                <th>Outstanding ({{ config('app.currency', 'USD') }})</th>
+                                <th>Created At</th>
                             </tr>
-                        </thead>
-                        <tbody>
+                            </thead>
+                            <tbody>
                             @foreach($fees as $fee)
                                 <tr>
-                                    <td>{{ $fee->id }}</td>
-                                    <td>{{ $fee->student->user->firstName }} {{ $fee->student->user->lastName }}</td>
-                                    <td>{{ $fee->term->name }}</td>
+                                    <td>{{ $fee->student->user->name ?? 'N/A' }}</td>
+                                    <td>{{ $fee->term->name ?? 'N/A' }}</td>
+                                    <td>{{ $fee->student->class_level ?? 'N/A' }}</td>
                                     <td>{{ number_format($fee->total_amount, 2) }}</td>
                                     <td>{{ number_format($fee->paid_amount, 2) }}</td>
                                     <td>{{ number_format($fee->total_amount - $fee->paid_amount, 2) }}</td>
-                                    <td>
-                                        @if($fee->status == 'paid')
-                                            <span class="badge bg-success">Paid</span>
-                                        @elseif($fee->status == 'partial')
-                                            <span class="badge bg-warning">Partial</span>
-                                        @else
-                                            <span class="badge bg-danger">Unpaid</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('bursar.fees.show', $fee->id) }}" class="btn btn-info btn-sm">View</a>
-                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#paymentModal" 
-                                            data-fee-id="{{ $fee->id }}" 
-                                            data-student-name="{{ $fee->student->user->firstName }} {{ $fee->student->user->lastName }}"
-                                            data-balance="{{ $fee->total_amount - $fee->paid_amount }}">
-                                            Add Payment
-                                        </button>
-                                    </td>
+                                    <td>{{ $fee->created_at->format('M d, Y') }}</td>
                                 </tr>
                             @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-3">
-                    {{ $fees->links() }}
-                </div>
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="text-center py-4">
+                        <i class="fas fa-exclamation-circle fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No fees found for the selected criteria.</p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 
-    <!-- Payment Modal -->
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="paymentModalLabel">Process Payment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{{ route('bursar.fees.process-payment') }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <input type="hidden" name="fee_id" id="fee_id">
-                        <div class="mb-3">
-                            <label for="student_name" class="form-label">Student</label>
-                            <input type="text" class="form-control" id="student_name" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="balance" class="form-label">Current Balance</label>
-                            <input type="text" class="form-control" id="balance" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="amount" class="form-label">Payment Amount</label>
-                            <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="payment_method" class="form-label">Payment Method</label>
-                            <select class="form-select" id="payment_method" name="payment_method" required>
-                                <option value="cash">Cash</option>
-                                <option value="bank_transfer">Bank Transfer</option>
-                                <option value="mobile_money">Mobile Money</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="receipt_number" class="form-label">Receipt Number</label>
-                            <input type="text" class="form-control" id="receipt_number" name="receipt_number" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="transaction_id" class="form-label">Transaction ID (Optional)</label>
-                            <input type="text" class="form-control" id="transaction_id" name="transaction_id">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Process Payment</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <x-slot name="scripts">
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const paymentModal = document.getElementById('paymentModal');
-                if (paymentModal) {
-                    paymentModal.addEventListener('show.bs.modal', function(event) {
-                        const button = event.relatedTarget;
-                        const feeId = button.getAttribute('data-fee-id');
-                        const studentName = button.getAttribute('data-student-name');
-                        const balance = button.getAttribute('data-balance');
-                        
-                        document.getElementById('fee_id').value = feeId;
-                        document.getElementById('student_name').value = studentName;
-                        document.getElementById('balance').value = balance;
-                    });
-                }
-                
-                // Initialize DataTable
-                $('#feesTable').DataTable({
-                    paging: false,
-                    info: false
-                });
-            });
-        </script>
-    </x-slot>
-</x-layout>
+    @push('styles')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    @endpush
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+        @if(session('success'))
+            <script>
+                Toastify({
+                    text: "{{ session('success') }}",
+                    duration: 3000,
+                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+                }).showToast();
+            </script>
+        @endif
+        @if(session('error'))
+            <script>
+                Toastify({
+                    text: "{{ session('error') }}",
+                    duration: 3000,
+                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+                }).showToast();
+            </script>
+        @endif
+    @endpush
+</x-app-layout>
+```

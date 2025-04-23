@@ -1,4 +1,4 @@
-<x-layout title="Financial Reports">
+<x-app-layout title="Financial Reports">
     <div class="container-fluid px-4">
         <h1 class="mt-4">Financial Reports</h1>
         <ol class="breadcrumb mb-4">
@@ -14,27 +14,35 @@
                         Fee Reports
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('bursar.reports.generate-fee') }}" method="POST">
-                            @csrf
+                        <form action="{{ route('bursar.reports.fees') }}" method="GET">
                             <div class="mb-3">
                                 <label for="term_id" class="form-label">Term</label>
-                                <select class="form-select" id="term_id" name="term_id" required>
+                                <select class="form-select @error('term_id') is-invalid @enderror" id="term_id" name="term_id" required>
                                     <option value="">Select Term</option>
                                     @foreach(App\Models\Term::orderBy('start_date', 'desc')->get() as $term)
                                         <option value="{{ $term->id }}">{{ $term->name }} ({{ $term->start_date->format('M Y') }} - {{ $term->end_date->format('M Y') }})</option>
                                     @endforeach
                                 </select>
+                                @error('term_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="mb-3">
                                 <label for="class_level" class="form-label">Class Level (Optional)</label>
-                                <select class="form-select" id="class_level" name="class_level">
+                                <select class="form-select @error('class_level') is-invalid @enderror" id="class_level" name="class_level">
                                     <option value="">All Classes</option>
                                     <option value="Form 1">Form 1</option>
                                     <option value="Form 2">Form 2</option>
                                     <option value="Form 3">Form 3</option>
                                     <option value="Form 4">Form 4</option>
                                 </select>
+                                @error('class_level')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
+                            <!-- Hidden inputs for start_date and end_date to satisfy validation -->
+                            <input type="hidden" name="start_date" value="{{ \Carbon\Carbon::now()->subYear()->format('Y-m-d') }}">
+                            <input type="hidden" name="end_date" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                             <button type="submit" class="btn btn-primary">Generate Report</button>
                         </form>
                     </div>
@@ -47,21 +55,26 @@
                         Expense Reports
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('bursar.reports.generate-expense') }}" method="POST">
-                            @csrf
+                        <form action="{{ route('bursar.reports.expenses') }}" method="GET">
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="start_date" class="form-label">Start Date</label>
-                                    <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                    <input type="date" class="form-control @error('start_date') is-invalid @enderror" id="start_date" name="start_date" required>
+                                    @error('start_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-6">
                                     <label for="end_date" class="form-label">End Date</label>
-                                    <input type="date" class="form-control" id="end_date" name="end_date" required>
+                                    <input type="date" class="form-control @error('end_date') is-invalid @enderror" id="end_date" name="end_date" required>
+                                    @error('end_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="category" class="form-label">Category (Optional)</label>
-                                <select class="form-select" id="category" name="category">
+                                <select class="form-select @error('category') is-invalid @enderror" id="category" name="category">
                                     <option value="">All Categories</option>
                                     <option value="supplies">Supplies</option>
                                     <option value="utilities">Utilities</option>
@@ -72,6 +85,9 @@
                                     <option value="food">Food</option>
                                     <option value="miscellaneous">Miscellaneous</option>
                                 </select>
+                                @error('category')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <button type="submit" class="btn btn-primary">Generate Report</button>
                         </form>
@@ -89,29 +105,29 @@
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="reportsTable">
                         <thead>
-                            <tr>
-                                <th>Report Name</th>
-                                <th>Type</th>
-                                <th>Date Range</th>
-                                <th>Generated By</th>
-                                <th>Generated On</th>
-                                <th>Actions</th>
-                            </tr>
+                        <tr>
+                            <th>Report Name</th>
+                            <th>Type</th>
+                            <th>Date Range</th>
+                            <th>Generated By</th>
+                            <th>Generated On</th>
+                            <th>Actions</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @foreach($reports as $report)
-                                <tr>
-                                    <td>{{ $report->report_name }}</td>
-                                    <td>{{ ucfirst($report->report_type) }}</td>
-                                    <td>{{ $report->start_date->format('Y-m-d') }} to {{ $report->end_date->format('Y-m-d') }}</td>
-                                    <td>{{ $report->generatedBy->firstName }} {{ $report->generatedBy->lastName }}</td>
-                                    <td>{{ $report->created_at->format('Y-m-d H:i') }}</td>
-                                    <td>
-                                        <a href="{{ route('bursar.reports.show', $report->id) }}" class="btn btn-info btn-sm">View</a>
-                                        <a href="{{ route('bursar.reports.download', $report->id) }}" class="btn btn-success btn-sm">Download</a>
-                                    </td>
-                                </tr>
-                            @endforeach
+                        @foreach($reports as $report)
+                            <tr>
+                                <td>{{ $report->report_name }}</td>
+                                <td>{{ ucfirst($report->report_type) }}</td>
+                                <td>{{ $report->start_date->format('Y-m-d') }} to {{ $report->end_date->format('Y-m-d') }}</td>
+                                <td>{{ $report->generatedBy->firstName }} {{ $report->generatedBy->lastName }}</td>
+                                <td>{{ $report->created_at->format('Y-m-d H:i') }}</td>
+                                <td>
+                                    <a href="{{ route('bursar.reports.view', $report->id) }}" class="btn btn-info btn-sm">View</a>
+                                    <a href="{{ route('bursar.reports.download', $report->id) }}" class="btn btn-success btn-sm">Download</a>
+                                </td>
+                            </tr>
+                        @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -129,14 +145,14 @@
                     paging: false,
                     info: false
                 });
-                
+
                 // Set default dates
                 const today = new Date();
                 const firstDayMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-                
+
                 document.getElementById('start_date').value = formatDate(firstDayMonth);
                 document.getElementById('end_date').value = formatDate(today);
-                
+
                 function formatDate(date) {
                     const year = date.getFullYear();
                     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -146,4 +162,4 @@
             });
         </script>
     </x-slot>
-</x-layout>
+</x-app-layout>

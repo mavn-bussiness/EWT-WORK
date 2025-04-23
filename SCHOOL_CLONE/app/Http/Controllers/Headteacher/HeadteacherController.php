@@ -107,12 +107,12 @@ class HeadteacherController extends Controller
     public function registerBursar(Request $request)
     {
         $maxBursars = 5;
-
+    
         if (Bursar::count() >= $maxBursars) {
             return redirect()->route('headteacher.staff.bursars')
                 ->with('error', "Maximum number of bursars ({$maxBursars}) already reached.");
         }
-
+    
         $request->validate([
             'firstName' => 'required|string|max:255',
             'lastName' => 'required|string|max:255',
@@ -120,27 +120,42 @@ class HeadteacherController extends Controller
             'phoneNumber' => 'required|string',
             'role' => 'required|in:chief_bursar,assistant_bursar,accounts_clerk,cashier',
         ]);
-
+    
         $defaultPassword = strtolower($request->firstName . $request->lastName);
-
+    
         $user = User::create([
             'firstName' => $request->firstName,
             'lastName' => $request->lastName,
             'email' => $request->email,
             'role' => 'bursar',
-            'password' => Hash::make('defaultPassward'),
+            'password' => Hash::make($defaultPassword),
             'is_active' => true,
         ]);
-
+    
+        // Generate a unique staffId
+        $year = now()->format('Y');
+        $lastBursar = Bursar::where('staffId', 'like', "BUR-{$year}%")
+                       ->orderBy('staffId', 'desc')
+                       ->first();
+                       
+        $nextNumber = 1;
+        if ($lastBursar) {
+            // Extract the number part from the last ID and increment
+            $lastNumber = (int) substr($lastBursar->staffId, -4);
+            $nextNumber = $lastNumber + 1;
+        }
+        
+        $staffId = 'BUR-' . $year . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    
         Bursar::create([
             'user_id' => $user->id,
-            'staffId' => 'BUR-' . now()->format('Y') . str_pad(Bursar::count() + 1, 4, '0', STR_PAD_LEFT),
+            'staffId' => $staffId,
             'role' => $request->role,
             'phoneNumber' => $request->phoneNumber,
             'transaction_limit' => $request->role === 'chief_bursar' ? null : 500000,
             'can_approve_expenses' => $request->role === 'chief_bursar',
         ]);
-
+    
         return redirect()->route('headteacher.dashboard')
             ->with('success', 'Bursar registered successfully.');
     }
@@ -176,6 +191,19 @@ class HeadteacherController extends Controller
         ->with('success', 'Bursar information updated successfully');
 }
 
+public function deleteBursar(Bursar $bursar)
+{
+    // Store the bursar ID before deletion for reference in the message
+    $bursarId = $bursar->staffId;
+    
+    // First delete the associated user account
+    $user = $bursar->user;
+    $bursar->delete();
+    $user->delete();
+    
+    return redirect()->route('headteacher.staff.bursars')
+        ->with('success', "Bursar {$bursarId} deleted successfully.");
+}
     // Other methods remain unchanged...
     public function announcementsIndex()
     {
