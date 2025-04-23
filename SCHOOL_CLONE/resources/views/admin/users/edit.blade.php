@@ -1,227 +1,307 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    <!-- Custom Styles for AWS-inspired UI -->
+    <style>
+        :root {
+            --aws-navy: #1a2538;
+            --aws-dark-navy: #0f172a;
+            --aws-orange: #ec7211;
+            --aws-orange-hover: #f28a38;
+            --aws-border: #4b5563;
+            --aws-text-light: #d1d5db;
+            --aws-green: #10b981;
+            --aws-red: #ef4444;
+            --aws-yellow: #facc15;
+            --aws-blue: #3b82f6;
+            --aws-background: #111827;
+        }
+
+        .aws-sidebar {
+            background-color: var(--aws-dark-navy);
+            color: var(--aws-text-light);
+            min-height: 100vh;
+            padding: 1.5rem;
+            width: 16rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .aws-sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--aws-text-light);
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .aws-sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .aws-sidebar a.active {
+            background-color: var(--aws-orange);
+            color: var(--aws-navy);
+        }
+
+        .aws-content {
+            margin-left: 16rem;
+            padding: 2rem;
+            background-color: var(--aws-background);
+            min-height: 100vh;
+        }
+
+        .aws-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--aws-border);
+            border-radius: 0.75rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .aws-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .aws-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .aws-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .aws-btn:active {
+            transform: translateY(0);
+        }
+
+        .aws-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--aws-border);
+            border-radius: 0.5rem;
+            color: var(--aws-text-light);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .aws-input:focus {
+            outline: none;
+            border-color: var(--aws-orange);
+            box-shadow: 0 0 5px rgba(236, 114, 17, 0.3);
+        }
+
+        .aws-input-error {
+            border-color: var(--aws-red);
+        }
+
+        .aws-label {
+            display: block;
+            color: var(--aws-text-light);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .aws-error {
+            color: var(--aws-red);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .aws-select {
+            appearance: none;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--aws-border);
+            border-radius: 0.5rem;
+            color: var(--aws-text-light);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .aws-select:focus {
+            outline: none;
+            border-color: var(--aws-orange);
+            box-shadow: 0 0 5px rgba(236, 114, 17, 0.3);
+        }
+
+        .aws-select-wrapper {
+            position: relative;
+        }
+
+        .aws-select-wrapper::after {
+            content: '\25BC';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--aws-text-light);
+            pointer-events: none;
+        }
+    </style>
+
+    <!-- Sidebar -->
+    <div class="aws-sidebar">
+        <div class="flex items-center mb-8">
+            <svg viewBox="0 0 316 316" class="w-8 h-8 mr-2 text-[var(--aws-orange)]" xmlns="http://www.w3.org/2000/svg">
+                <path class="fill-[var(--aws-orange)]" d="M60 200 C60 180, 80 160, 158 160 C236 160, 256 180, 256 200 V240 C256 260, 236 280, 158 280 C80 280, 60 260, 60 240 V200 Z"/>
+                <path class="fill-[var(--aws-text-light)]" d="M80 200 C80 190, 90 180, 158 180 C226 180, 236 190, 236 200 V230 C236 240, 226 250, 158 250 C90 250, 80 240, 80 230 V200 Z"/>
+                <path class="fill-[var(--aws-navy)]" d="M148 120 H168 V160 H148 Z"/>
+                <path class="fill-[var(--aws-orange)]" d="M158 80 C150 80, 146 90, 148 100 C150 110, 166 110, 168 100 C170 90, 166 80, 158 80 Z"/>
+            </svg>
+            <h1 class="text-xl font-semibold">The S.M.S</h1>
+        </div>
+        <div class="flex items-center mb-6">
+            <div class="w-10 h-10 bg-[var(--aws-orange)] rounded-full flex items-center justify-center mr-3">
+                <span class="text-[var(--aws-navy)] font-bold">AD</span>
+            </div>
+            <div>
+                <p class="text-sm font-medium">Admin</p>
+                <p class="text-xs text-[var(--aws-text-light)] opacity-75">Admin Access</p>
+            </div>
+        </div>
+        <nav class="space-y-2">
+            <a href="{{ route('admin.dashboard') }}">
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Dashboard
+            </a>
+            <a href="{{ route('admin.users.index') }}" class="active">
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Manage Users
+            </a>
+            <a href="{{ route('admin.events.index') }}">
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Manage Events
+            </a>
+            <a href="#">
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Reports
+            </a>
+            <a href="#">
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Calendar
+            </a>
+            <a href="#">
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Settings
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="aws-content">
+        <x-slot name="header">
+            <h2 class="text-2xl font-semibold text-white leading-tight">
                 {{ __('Edit User') }}
             </h2>
-            <a href="{{ route('admin.users.index') }}" 
-               class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Users
-            </a>
-        </div>
-    </x-slot>
+        </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <!-- User Edit Form -->
-                    <form method="POST" action="{{ route('admin.users.update', $user->id) }}" enctype="multipart/form-data">
-                        @csrf
-                        @method('PATCH')
-                        
-                        <!-- Profile Section -->
-                        <div class="mb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                                Personal Information
-                            </h3>
-                            
-                            <div class="flex flex-col md:flex-row items-start gap-8">
-                                <!-- Profile Photo Section -->
-                                <div class="w-full md:w-1/4 flex flex-col items-center">
-                                    <!-- Current Profile Photo -->
-                                    <div class="mb-4 text-center">
-                                        @if ($user->profile_photo)
-                                            <img src="{{ asset('storage/' . $user->profile_photo) }}" 
-                                                 alt="{{ $user->firstName }} {{ $user->lastName }}" 
-                                                 class="h-40 w-40 object-cover rounded-full border-4 border-gray-200 shadow">
-                                        @else
-                                            <div class="h-40 w-40 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-2xl font-semibold border-4 border-gray-200 shadow">
-                                                {{ substr($user->firstName, 0, 1) }}{{ substr($user->lastName, 0, 1) }}
-                                            </div>
-                                        @endif
-                                    </div>
-                                    
-                                    <!-- New Profile Photo -->
-                                    <div class="w-full">
-                                        <x-input-label for="profile_photo" :value="__('Update Photo')" class="text-center" />
-                                        <input id="profile_photo" type="file" name="profile_photo" 
-                                               class="block w-full text-sm text-gray-500 mt-2
-                                                      file:mr-4 file:py-2 file:px-4
-                                                      file:rounded-full file:border-0
-                                                      file:text-sm file:font-semibold
-                                                      file:bg-indigo-50 file:text-indigo-700
-                                                      hover:file:bg-indigo-100" />
-                                        <x-input-error :messages="$errors->get('profile_photo')" class="mt-2" />
-                                    </div>
-                                </div>
-                                
-                                <!-- Basic Info Section -->
-                                <div class="w-full md:w-3/4">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <!-- First Name -->
-                                        <div>
-                                            <x-input-label for="firstName" :value="__('First Name')" />
-                                            <x-text-input id="firstName" class="block mt-1 w-full" type="text" name="firstName" :value="old('firstName', $user->firstName)" required autofocus />
-                                            <x-input-error :messages="$errors->get('firstName')" class="mt-2" />
-                                        </div>
-
-                                        <!-- Last Name -->
-                                        <div>
-                                            <x-input-label for="lastName" :value="__('Last Name')" />
-                                            <x-text-input id="lastName" class="block mt-1 w-full" type="text" name="lastName" :value="old('lastName', $user->lastName)" required />
-                                            <x-input-error :messages="$errors->get('lastName')" class="mt-2" />
-                                        </div>
-                                        
-                                        <!-- Other Name -->
-                                        <div>
-                                            <x-input-label for="otherName" :value="__('Other Name (Optional)')" />
-                                            <x-text-input id="otherName" class="block mt-1 w-full" type="text" name="otherName" :value="old('otherName', $user->otherName)" />
-                                            <x-input-error :messages="$errors->get('otherName')" class="mt-2" />
-                                        </div>
-
-                                        <!-- Email -->
-                                        <div>
-                                            <x-input-label for="email" :value="__('Email Address')" />
-                                            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $user->email)" required />
-                                            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Account Information Section -->
-                        <div class="mb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                                Account Information
-                            </h3>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Role -->
-                                <div>
-                                    <x-input-label for="role" :value="__('Role')" />
-                                    <select id="role" name="role" 
-                                            class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full">
-                                        <option value="student" {{ old('role', $user->role) == 'student' ? 'selected' : '' }}>Student</option>
-                                        <option value="teacher" {{ old('role', $user->role) == 'teacher' ? 'selected' : '' }}>Teacher</option>
-                                        <option value="parent" {{ old('role', $user->role) == 'parent' ? 'selected' : '' }}>Parent</option>
-                                        <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                                        <option value="headteacher" {{ old('role', $user->role) == 'headteacher' ? 'selected' : '' }}>Head Teacher</option>
-                                        <option value="bursar" {{ old('role', $user->role) == 'bursar' ? 'selected' : '' }}>Bursar</option>
-                                        <option value="dos" {{ old('role', $user->role) == 'dos' ? 'selected' : '' }}>DOS</option>
-                                        <option value="librarian" {{ old('role', $user->role) == 'librarian' ? 'selected' : '' }}>Librarian</option>
-                                    </select>
-                                    <x-input-error :messages="$errors->get('role')" class="mt-2" />
-                                </div>
-                                
-                                <!-- Account Status -->
-                                <div>
-                                    <x-input-label for="is_active" :value="__('Account Status')" />
-                                    <div class="mt-3">
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" id="is_active" name="is_active" class="sr-only peer" {{ $user->is_active ? 'checked' : '' }}>
-                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                                            <span class="ml-3 text-sm font-medium text-gray-900">
-                                                <span class="text-green-600" id="status_text">{{ $user->is_active ? 'Active' : 'Inactive' }}</span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Password Section -->
-                        <div class="mb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                                Password
-                                <span class="text-sm font-normal text-gray-500 ml-2">Leave blank to keep current password</span>
-                            </h3>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Password -->
-                                <div>
-                                    <x-input-label for="password" :value="__('New Password')" />
-                                    <div class="relative">
-                                        <x-text-input id="password" class="block mt-1 w-full pr-10" type="password" name="password" />
-                                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                                </div>
-
-                                <!-- Confirm Password -->
-                                <div>
-                                    <x-input-label for="password_confirmation" :value="__('Confirm New Password')" />
-                                    <div class="relative">
-                                        <x-text-input id="password_confirmation" class="block mt-1 w-full pr-10" type="password" name="password_confirmation" />
-                                        <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Form Actions -->
-                        <div class="flex items-center justify-end space-x-4 pt-4 border-t border-gray-200">
-                            <a href="{{ route('admin.users.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
-                                Cancel
-                            </a>
-                            <x-primary-button>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
-                                {{ __('Update User') }}
-                            </x-primary-button>
-                        </div>
-                    </form>
+        <!-- Edit User Form -->
+        <div class="aws-card">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold text-white">Update User Details</h3>
+                    <a href="{{ route('admin.users.index') }}" class="text-[var(--aws-orange)] hover:text-[var(--aws-orange-hover)]">
+                        ← Back to Users List
+                    </a>
                 </div>
+
+                <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
+                    @csrf
+                    @method('PATCH')
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- First Name -->
+                        <div>
+                            <label for="firstName" class="aws-label">First Name</label>
+                            <input id="firstName" name="firstName" type="text" class="aws-input @error('firstName') aws-input-error @enderror" value="{{ old('firstName', $user->firstName) }}" required autofocus />
+                            @error('firstName')
+                            <p class="aws-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Last Name -->
+                        <div>
+                            <label for="lastName" class="aws-label">Last Name</label>
+                            <input id="lastName" name="lastName" type="text" class="aws-input @error('lastName') aws-input-error @enderror" value="{{ old('lastName', $user->lastName) }}" required />
+                            @error('lastName')
+                            <p class="aws-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="aws-label">Email</label>
+                            <input id="email" name="email" type="email" class="aws-input @error('email') aws-input-error @enderror" value="{{ old('email', $user->email) }}" required />
+                            @error('email')
+                            <p class="aws-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Role -->
+                        <div>
+                            <label for="role" class="aws-label">Role</label>
+                            <div class="aws-select-wrapper">
+                                <select id="role" name="role" class="aws-select @error('role') aws-input-error @enderror" required>
+                                    <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="teacher" {{ old('role', $user->role) === 'teacher' ? 'selected' : '' }}>Teacher</option>
+                                    <option value="student" {{ old('role', $user->role) === 'student' ? 'selected' : '' }}>Student</option>
+                                    <option value="headteacher" {{ old('role', $user->role) === 'headteacher' ? 'selected' : '' }}>Headteacher</option>
+                                    <option value="dos" {{ old('role', $user->role) === 'dos' ? 'selected' : '' }}>DOS</option>
+                                </select>
+                            </div>
+                            @error('role')
+                            <p class="aws-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Password -->
+                        <div>
+                            <label for="password" class="aws-label">New Password (Optional)</label>
+                            <input id="password" name="password" type="password" class="aws-input @error('password') aws-input-error @enderror" />
+                            @error('password')
+                            <p class="aws-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Password Confirmation -->
+                        <div>
+                            <label for="password_confirmation" class="aws-label">Confirm New Password</label>
+                            <input id="password_confirmation" name="password_confirmation" type="password" class="aws-input" />
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex justify-end space-x-3 mt-8">
+                        <a href="{{ route('admin.users.index') }}" class="aws-btn bg-[var(--aws-border)] text-[var(--aws-text-light)] hover:bg-[var(--aws-border)]/80">
+                            Cancel
+                        </a>
+                        <button type="submit" class="aws-btn bg-[var(--aws-orange)] text-[var(--aws-navy)] hover:bg-[var(--aws-orange-hover)]">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    
-    <script>
-        // Toggle password visibility
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            
-            // Toggle icon
-            this.innerHTML = type === 'password' 
-                ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>'
-                : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" /><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" /></svg>';
-        });
-        
-        // Toggle confirm password visibility
-        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
-            const confirmPasswordInput = document.getElementById('password_confirmation');
-            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            confirmPasswordInput.setAttribute('type', type);
-            
-            // Toggle icon
-            this.innerHTML = type === 'password' 
-                ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>'
-                : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" /><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" /></svg>';
-        });
-        
-        // Update status text when toggle changes
-        document.getElementById('is_active').addEventListener('change', function() {
-            document.getElementById('status_text').textContent = this.checked ? 'Active' : 'Inactive';
-            document.getElementById('status_text').className = this.checked ? 'text-green-600' : 'text-red-600';
-        });
-    </script>
 </x-app-layout>

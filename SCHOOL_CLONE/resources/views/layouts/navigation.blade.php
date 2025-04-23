@@ -1,50 +1,162 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-    <!-- Primary Navigation Menu -->
+<nav x-data="{ open: false }" class="bg-[var(--aws-navy)] border-b border-[var(--aws-border)] sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                    </a>
-                </div>
+            <!-- Logo Section -->
+            <div class="flex items-center">
+                <a href="{{ route('dashboard') }}" class="shrink-0 flex items-center">
+                    <span class="text-xl font-bold text-[var(--aws-orange)]">the S.M.S</span>
+                </a>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                <!-- Desktop Nav Links -->
+                <div class="hidden space-x-8 sm:flex sm:ml-10">
+                    @php
+                        $user = Auth::user();
+                        $role = $user->roles->first()->name ?? 'user';
+                        $dashboardRoutes = [
+                            'headteacher' => 'headteacher.dashboard',
+                            'dos' => 'dos.dashboard',
+                            'bursar' => 'bursar.dashboard',
+                            'teacher' => 'teacher.dashboard',
+                            'user' => 'dashboard'
+                        ];
+                        $activeRoutes = array_values($dashboardRoutes);
+                    @endphp
+
+                    <x-nav-link
+                        :href="route($dashboardRoutes[$role])"
+                        :active="in_array(Route::currentRouteName(), $activeRoutes)"
+                        class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                    >
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    @if($role === 'headteacher')
+                        <x-nav-link
+                            :href="route('headteacher.staff.dos')"
+                            :active="request()->routeIs('headteacher.staff.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Staff Management') }}
+                        </x-nav-link>
+                        <x-nav-link
+                            :href="route('headteacher.reports.index')"
+                            :active="request()->routeIs('headteacher.reports.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Reports') }}
+                        </x-nav-link>
+                    @elseif($role === 'dos')
+                        <x-nav-link
+                            :href="route('dos.students.index')"
+                            :active="request()->routeIs('dos.students.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Students') }}
+                        </x-nav-link>
+                        <x-nav-link
+                            :href="route('dos.classes.index')"
+                            :active="request()->routeIs('dos.classes.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Classes') }}
+                        </x-nav-link>
+                        <x-nav-link
+                            :href="route('dos.subjects.index')"
+                            :active="request()->routeIs('dos.subjects.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Subjects') }}
+                        </x-nav-link>
+                        <x-nav-link
+                            :href="route('dos.timetable.index')"
+                            :active="request()->routeIs('dos.timetable.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Timetable') }}
+                        </x-nav-link>
+                    @elseif($role === 'bursar')
+                        <x-nav-link
+                            :href="route('bursar.fees.index')"
+                            :active="request()->routeIs('bursar.fees.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Fees') }}
+                        </x-nav-link>
+                        <x-nav-link
+                            :href="route('bursar.payments.index')"
+                            :active="request()->routeIs('bursar.payments.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Payments') }}
+                        </x-nav-link>
+                        <x-nav-link
+                            :href="route('bursar.budgets.index')"
+                            :active="request()->routeIs('bursar.budgets.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Budgets') }}
+                        </x-nav-link>
+                    @elseif($role === 'teacher')
+                        <x-nav-link
+                            :href="route('teacher.subjects.index')"
+                            :active="request()->routeIs('teacher.subjects.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Subjects') }}
+                        </x-nav-link>
+                        <x-nav-link
+                            :href="route('teacher.assignments.index')"
+                            :active="request()->routeIs('teacher.assignments.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Assignments') }}
+                        </x-nav-link>
+                        <x-nav-link
+                            :href="route('teacher.attendance.index')"
+                            :active="request()->routeIs('teacher.attendance.*')"
+                            class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:border-[var(--aws-orange)] px-1 pt-1 border-b-2 border-transparent"
+                        >
+                            {{ __('Attendance') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <!-- Profile Dropdown -->
+            <div class="hidden sm:flex sm:items-center sm:ml-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                            <div class="flex items-center">
+                                @if($user->profile_photo_path)
+                                    <img class="h-8 w-8 rounded-full mr-2" src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" />
+                                @else
+                                    <div class="h-8 w-8 rounded-full bg-[var(--aws-orange)] flex items-center justify-center mr-2">
+                                        <span class="font-medium text-[var(--aws-navy)]">{{ substr($user->name, 0, 1) }}</span>
+                                    </div>
+                                @endif
+                                <div>
+                                    <div>{{ $user->name }}</div>
+                                    <div class="text-xs text-[var(--aws-text-light)] opacity-75">{{ ucfirst($role) }}</div>
+                                </div>
+                                <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </div>
                         </button>
                     </x-slot>
-
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('profile.edit')" class="hover:bg-gray-700">
                             {{ __('Profile') }}
                         </x-dropdown-link>
-
-                        <!-- Authentication -->
+                        <x-dropdown-link :href="route('password.change')" class="hover:bg-gray-700">
+                            {{ __('Change Password') }}
+                        </x-dropdown-link>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-
                             <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
+                                             onclick="event.preventDefault(); this.closest('form').submit();"
+                                             class="hover:bg-gray-700">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
@@ -52,9 +164,9 @@
                 </x-dropdown>
             </div>
 
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
+            <!-- Mobile Hamburger -->
+            <div class="-mr-2 flex items-center sm:hidden">
+                <button @click="open = ! open" class="p-2 rounded-md text-[var(--aws-text-light)] hover:text-[var(--aws-orange)] hover:bg-[var(--aws-dark-gray)]">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -64,33 +176,102 @@
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
+    <!-- Mobile menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            <x-responsive-nav-link :href="route($dashboardRoutes[$role])" :active="in_array(Route::currentRouteName(), $activeRoutes)"
+                                   class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            @if($role === 'headteacher')
+                <x-responsive-nav-link :href="route('headteacher.staff.dos')" :active="request()->routeIs('headteacher.staff.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Staff Management') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('headteacher.reports.index')" :active="request()->routeIs('headteacher.reports.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Reports') }}
+                </x-responsive-nav-link>
+            @elseif($role === 'dos')
+                <!-- DOS mobile menu items -->
+                <x-responsive-nav-link :href="route('dos.students.index')" :active="request()->routeIs('dos.students.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Students') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dos.classes.index')" :active="request()->routeIs('dos.classes.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Classes') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dos.subjects.index')" :active="request()->routeIs('dos.subjects.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Subjects') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dos.timetable.index')" :active="request()->routeIs('dos.timetable.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Timetable') }}
+                </x-responsive-nav-link>
+            @elseif($role === 'bursar')
+                <!-- Bursar mobile menu items -->
+                <x-responsive-nav-link :href="route('bursar.fees.index')" :active="request()->routeIs('bursar.fees.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Fees') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('bursar.payments.index')" :active="request()->routeIs('bursar.payments.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Payments') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('bursar.budgets.index')" :active="request()->routeIs('bursar.budgets.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Budgets') }}
+                </x-responsive-nav-link>
+            @elseif($role === 'teacher')
+                <!-- Teacher mobile menu items -->
+                <x-responsive-nav-link :href="route('teacher.subjects.index')" :active="request()->routeIs('teacher.subjects.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Subjects') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('teacher.assignments.index')" :active="request()->routeIs('teacher.assignments.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Assignments') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('teacher.attendance.index')" :active="request()->routeIs('teacher.attendance.*')"
+                                       class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Attendance') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+        <!-- Mobile profile section -->
+        <div class="pt-4 pb-1 border-t border-[var(--aws-border)]">
+            <div class="flex items-center px-4">
+                <div class="flex-shrink-0">
+                    @if($user->profile_photo_path)
+                        <img class="h-10 w-10 rounded-full" src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" />
+                    @else
+                        <div class="h-10 w-10 rounded-full bg-[var(--aws-orange)] flex items-center justify-center">
+                            <span class="font-medium text-[var(--aws-navy)]">{{ substr($user->name, 0, 1) }}</span>
+                        </div>
+                    @endif
+                </div>
+                <div class="ml-3">
+                    <div class="font-medium text-[var(--aws-text-light)]">{{ $user->name }}</div>
+                    <div class="text-sm text-gray-400">{{ $user->email }}</div>
+                </div>
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
+                <x-responsive-nav-link :href="route('profile.edit')" class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
-
-                <!-- Authentication -->
+                <x-responsive-nav-link :href="route('password.change')" class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
+                    {{ __('Change Password') }}
+                </x-responsive-nav-link>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
                     <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
+                                           onclick="event.preventDefault(); this.closest('form').submit();"
+                                           class="text-[var(--aws-text-light)] hover:text-[var(--aws-orange)]">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>

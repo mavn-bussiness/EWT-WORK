@@ -37,6 +37,11 @@ class Teacher extends Model
         return $this->hasMany(TeacherSubject::class);
     }
 
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(Assignment::class);
+    }
+
     public function timetables(): HasMany
     {
         return $this->hasMany(Timetable::class);

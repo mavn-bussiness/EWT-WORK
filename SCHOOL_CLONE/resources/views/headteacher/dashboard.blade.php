@@ -1,79 +1,246 @@
 <x-app-layout title="Headteacher Dashboard">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <x-stat-card title="Teachers" :value="$stats['teachers']" icon="people" color="blue" />
-        <x-stat-card title="Students" :value="$stats['students']" icon="school" color="green" />
-        <x-stat-card title="Pending Reports" :value="$stats['pending_reports']" icon="assignment" color="yellow" />
-        <x-stat-card title="Upcoming Events" :value="$stats['upcoming_events']" icon="event" color="purple" />
-    </div>
-
-    <div class="flex flex-wrap gap-4 mb-6">
-        <a href="{{ route('headteacher.staff.dos') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-            <span>Manage DOS</span>
-        </a>
-        <a href="{{ route('headteacher.staff.bursars') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>Manage Bursars</span>
-        </a>
-        <a href="{{ route('headteacher.announcements.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-            </svg>
-            <span>Manage Announcements</span>
-        </a>
-        <a href="{{ route('headteacher.reports.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span>View Reports</span>
-        </a>
-        <a href="{{ route('headteacher.events.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>School Calendar</span>
-        </a>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <x-card>
-            <x-slot name="header">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-medium">Recent Circulars</h3>
-                    <a href="{{ route('headteacher.announcements.index') }}" class="text-sm text-blue-600 hover:underline">
-                        View all
-                    </a>
+    <div class="flex flex-col min-h-screen bg-slate-900">
+        <!-- Sidebar -->
+        <div class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-800 shadow-xl transform transition-transform duration-300 lg:translate-x-0"
+             id="sidebar">
+            <div class="flex items-center justify-between h-16 px-6 bg-slate-900">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-yellow-500">the S.M.S</span>
                 </div>
-            </x-slot>
-            <div class="space-y-4">
-                @forelse($recentAnnouncements as $announcement)
-                    <x-announcement-item :announcement="$announcement" />
-                @empty
-                    <p class="text-gray-500 text-center py-4">No recent announcements</p>
-                @endforelse
+                <button class="text-gray-400 lg:hidden" onclick="document.getElementById('sidebar').classList.add('-translate-x-full')">
+                    <x-icon name="menu" class="w-6 h-6" />
+                </button>
             </div>
-        </x-card>
 
-        <x-card>
-            <x-slot name="header">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-medium">Pending Reports</h3>
-                    <a href="{{ route('headteacher.reports.index') }}" class="text-sm text-blue-600 hover:underline">
-                        View all
-                    </a>
+            <div class="px-4 py-6">
+                <div class="mb-8">
+                    <div class="flex items-center px-4 py-3 mb-2 bg-slate-700 rounded-lg">
+                        <div class="flex-shrink-0 w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
+                            <span class="text-slate-900 font-bold text-lg">HT</span>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white">Headteacher</p>
+                            <p class="text-xs text-gray-400">Admin Access</p>
+                        </div>
+                    </div>
                 </div>
-            </x-slot>
-            <div class="space-y-4">
-                @forelse($pendingReports as $report)
-                    <x-report-item :report="$report" />
-                @empty
-                    <p class="text-gray-500 text-center py-4">No pending reports</p>
-                @endforelse
+
+                <nav class="space-y-1">
+                    <a href="#" class="flex items-center px-4 py-3 text-white bg-slate-700 rounded-lg group">
+                        <x-icon name="dashboard" class="w-5 h-5 mr-3 text-yellow-500" />
+                        <span class="text-sm font-medium">Dashboard</span>
+                    </a>
+
+                    <a href="{{ route('headteacher.staff.dos') }}" class="flex items-center px-4 py-3 text-gray-300 hover:bg-slate-700 rounded-lg group hover:text-white transition-colors">
+                        <x-icon name="user-plus" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-yellow-500" />
+                        <span class="text-sm font-medium">Manage DOS</span>
+                    </a>
+
+                    <a href="{{ route('headteacher.staff.bursars') }}" class="flex items-center px-4 py-3 text-gray-300 hover:bg-slate-700 rounded-lg group hover:text-white transition-colors">
+                        <x-icon name="currency-dollar" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-yellow-500" />
+                        <span class="text-sm font-medium">Manage Bursars</span>
+                    </a>
+
+                    <a href="{{ route('headteacher.announcements.index') }}" class="flex items-center px-4 py-3 text-gray-300 hover:bg-slate-700 rounded-lg group hover:text-white transition-colors">
+                        <x-icon name="speakerphone" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-yellow-500" />
+                        <span class="text-sm font-medium">Announcements</span>
+                    </a>
+
+                    <a href="{{ route('headteacher.reports.index') }}" class="flex items-center px-4 py-3 text-gray-300 hover:bg-slate-700 rounded-lg group hover:text-white transition-colors">
+                        <x-icon name="clipboard-list" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-yellow-500" />
+                        <span class="text-sm font-medium">Reports</span>
+                    </a>
+
+                    <a href="{{ route('headteacher.events.index') }}" class="flex items-center px-4 py-3 text-gray-300 hover:bg-slate-700 rounded-lg group hover:text-white transition-colors">
+                        <x-icon name="calendar" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-yellow-500" />
+                        <span class="text-sm font-medium">Calendar</span>
+                    </a>
+                </nav>
+
+                <div class="pt-8 mt-8 border-t border-slate-700">
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-slate-700 rounded-lg group hover:text-white transition-colors">
+                        <x-icon name="cog" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-yellow-500" />
+                        <span class="text-sm font-medium">Settings</span>
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                        @csrf
+                        <a href="#"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                           class="flex items-center px-4 py-3 text-gray-300 hover:bg-slate-700 rounded-lg group hover:text-white transition-colors">
+                            <x-icon name="logout" class="w-5 h-5 mr-3 text-gray-400 group-hover:text-yellow-500" />
+                            <span class="text-sm font-medium">Logout</span>
+                        </a>
+                    </form>
+
+
+                </div>
             </div>
-        </x-card>
+        </div>
+
+        <!-- Main Content -->
+        <div class="lg:pl-64">
+            <!-- Top Navigation -->
+            <header class="bg-slate-800 shadow-md">
+                <div class="flex items-center justify-between px-6 h-16">
+                    <button class="text-gray-400 lg:hidden" onclick="document.getElementById('sidebar').classList.remove('-translate-x-full')">
+                        <x-icon name="menu" class="w-6 h-6" />
+                    </button>
+
+                    <div class="flex-1 lg:ml-6">
+                        <h1 class="text-xl font-semibold text-white">Headteacher Dashboard</h1>
+                    </div>
+
+                    <div class="flex items-center">
+                        <button class="p-1 mr-4 text-gray-400 rounded-full hover:text-white focus:outline-none">
+                            <x-icon name="bell" class="w-6 h-6" />
+                        </button>
+
+                        <a href="#" class="flex items-center text-sm text-white">
+                            <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                                <span class="font-medium text-slate-900">HT</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="flex-1 px-6 py-8">
+                <!-- Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-slate-800 rounded-2xl shadow-md p-5 border-l-4 border-blue-500 transition hover:shadow-lg">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-sm font-medium text-gray-400 uppercase tracking-wide">Teachers</div>
+                                <div class="text-3xl font-bold text-white mt-1">{{ $stats['teachers'] }}</div>
+                            </div>
+                            <div class="text-blue-500 bg-blue-500 bg-opacity-20 p-3 rounded-full">
+                                <x-icon name="people" class="h-8 w-8" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 rounded-2xl shadow-md p-5 border-l-4 border-green-500 transition hover:shadow-lg">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-sm font-medium text-gray-400 uppercase tracking-wide">Students</div>
+                                <div class="text-3xl font-bold text-white mt-1">{{ $stats['students'] }}</div>
+                            </div>
+                            <div class="text-green-500 bg-green-500 bg-opacity-20 p-3 rounded-full">
+                                <x-icon name="school" class="h-8 w-8" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 rounded-2xl shadow-md p-5 border-l-4 border-yellow-500 transition hover:shadow-lg">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-sm font-medium text-gray-400 uppercase tracking-wide">Pending Reports</div>
+                                <div class="text-3xl font-bold text-white mt-1">{{ $stats['pending_reports'] }}</div>
+                            </div>
+                            <div class="text-yellow-500 bg-yellow-500 bg-opacity-20 p-3 rounded-full">
+                                <x-icon name="assignment" class="h-8 w-8" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 rounded-2xl shadow-md p-5 border-l-4 border-purple-500 transition hover:shadow-lg">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <div class="text-sm font-medium text-gray-400 uppercase tracking-wide">Upcoming Events</div>
+                                <div class="text-3xl font-bold text-white mt-1">{{ $stats['upcoming_events'] }}</div>
+                            </div>
+                            <div class="text-purple-500 bg-purple-500 bg-opacity-20 p-3 rounded-full">
+                                <x-icon name="event" class="h-8 w-8" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-white mb-4">Quick Actions</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <a href="{{ route('headteacher.announcements.index') }}" class="flex items-center justify-center p-6 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 rounded-xl shadow-md hover:shadow-lg transition-all">
+                            <x-icon name="speakerphone" class="w-6 h-6 mr-3" />
+                            <span class="text-lg font-medium">Create Announcement</span>
+                        </a>
+
+                        <a href="{{ route('headteacher.reports.index') }}" class="flex items-center justify-center p-6 bg-slate-800 hover:bg-slate-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-700">
+                            <x-icon name="clipboard-list" class="w-6 h-6 mr-3" />
+                            <span class="text-lg font-medium">Review Reports</span>
+                        </a>
+
+                        <a href="{{ route('headteacher.events.index') }}" class="flex items-center justify-center p-6 bg-slate-800 hover:bg-slate-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all border border-gray-700">
+                            <x-icon name="calendar" class="w-6 h-6 mr-3" />
+                            <span class="text-lg font-medium">Schedule Event</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Content Sections -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recent Announcements -->
+                    <div class="bg-slate-800 rounded-xl shadow-md overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-700 bg-slate-800">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-semibold text-white">Recent Circulars</h3>
+                                <a href="{{ route('headteacher.announcements.index') }}" class="text-sm text-yellow-500 hover:underline">
+                                    View all
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                @forelse($recentAnnouncements as $announcement)
+                                    <x-announcement-item :announcement="$announcement" />
+                                @empty
+                                    <div class="flex flex-col items-center justify-center py-8 text-center">
+                                        <div class="bg-slate-700 p-4 rounded-full mb-3">
+                                            <x-icon name="speakerphone" class="w-8 h-8 text-gray-400" />
+                                        </div>
+                                        <p class="text-gray-400">No recent announcements</p>
+                                        <a href="{{ route('headteacher.announcements.create') }}" class="mt-3 px-4 py-2 bg-yellow-500 text-slate-900 rounded-lg text-sm font-medium hover:bg-yellow-600 transition-colors">
+                                            Create Announcement
+                                        </a>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Reports -->
+                    <div class="bg-slate-800 rounded-xl shadow-md overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-700 bg-slate-800">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-semibold text-white">Pending Reports</h3>
+                                <a href="{{ route('headteacher.reports.index') }}" class="text-sm text-yellow-500 hover:underline">
+                                    View all
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                @forelse($pendingReports as $report)
+                                    <x-report-item :report="$report" />
+                                @empty
+                                    <div class="flex flex-col items-center justify-center py-8 text-center">
+                                        <div class="bg-slate-700 p-4 rounded-full mb-3">
+                                            <x-icon name="clipboard-list" class="w-8 h-8 text-gray-400" />
+                                        </div>
+                                        <p class="text-gray-400">No pending reports</p>
+                                        <a href="{{ route('headteacher.reports.index') }}" class="mt-3 px-4 py-2 bg-slate-600 text-white rounded-lg text-sm font-medium hover:bg-slate-500 transition-colors">
+                                            View All Reports
+                                        </a>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
 </x-app-layout>

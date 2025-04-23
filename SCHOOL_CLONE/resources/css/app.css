@@ -1,3 +1,57 @@
+/* app.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --aws-navy: #232f3e;
+        --aws-dark-navy: #1a202c;
+        --aws-orange: #ff9900;
+        --aws-border: #3a4553;
+        --aws-text-light: #d1d5db;
+        --aws-dark-gray: #374151;
+        --aws-light-gray: #f3f4f6;
+        --aws-text-dark: #111827;
+    }
+
+    [data-theme="dark"] {
+        --aws-light-gray: #16191F;
+        --aws-text-dark: #D5DBDB;
+    }
+
+    html {
+        font-family: 'Inter', sans-serif;
+    }
+}
+
+@layer components {
+    .aws-btn-primary {
+        @apply bg-[var(--aws-orange)] text-white font-semibold px-5 py-2.5 rounded-md hover:bg-orange-500 shadow-sm transition duration-200 ease-in-out;
+    }
+
+    .aws-btn-secondary {
+        @apply bg-transparent border-2 border-[var(--aws-orange)] text-[var(--aws-orange)] px-5 py-2.5 rounded-md hover:bg-[var(--aws-orange)] hover:text-white transition duration-200;
+    }
+
+    .aws-nav-link {
+        @apply text-[var(--aws-text-light)] font-medium px-3 py-2 rounded hover:text-[var(--aws-orange)] hover:bg-[var(--aws-dark-gray)] transition-colors duration-150;
+    }
+
+    .aws-dropdown {
+        @apply bg-white dark:bg-[var(--aws-dark-gray)] border border-[var(--aws-border)] rounded-md shadow-lg p-4;
+    }
+
+    .aws-input {
+        @apply w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[var(--aws-dark-gray)] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[var(--aws-orange)] transition duration-200;
+    }
+
+    .aws-label {
+        @apply block mb-1 text-sm font-medium text-gray-700 dark:text-[var(--aws-text-light)];
+    }
+
+    .aws-card {
+        @apply p-6 bg-white dark:bg-[var(--aws-dark-gray)] rounded-lg shadow-lg border border-[var(--aws-border)];
+    }
+}
+

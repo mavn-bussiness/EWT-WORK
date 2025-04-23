@@ -26,21 +26,22 @@ class AdminController extends Controller
             'events' => SchoolEvent::count(),
             'upcoming_events' => SchoolEvent::where('event_date', '>=', now())->count(),
         ];
-        
+
         // Get recent users and events for quick preview
         $recentUsers = User::latest()->take(5)->get();
         $upcomingEvents = SchoolEvent::where('event_date', '>=', now())
             ->orderBy('event_date')
             ->take(5)
             ->get();
-        
+
         return view('admin.dashboard', compact('stats', 'recentUsers', 'upcomingEvents'));
     }
 
     // User Management Methods
     public function index()
     {
-        $users = User::orderBy('created_at', 'desc')->get();
+        $perPage = request('per_page', 10);
+        $users = User::orderBy('created_at', 'desc')->paginate($perPage);
         return view('admin.users.index', compact('users'));
     }
 
@@ -62,7 +63,7 @@ class AdminController extends Controller
 
     // Generate default password from first and last name in lowercase
     $defaultPassword = strtolower($validatedData['firstName'] . $validatedData['lastName']);
-    
+
     $profilePhotoPath = null;
     if ($request->hasFile('profile_photo')) {
         $profilePhotoPath = $request->file('profile_photo')->store('profile-photos', 'public');
@@ -136,8 +137,8 @@ class AdminController extends Controller
     // Events Management Methods
     public function eventIndex()
     {
-        $events = SchoolEvent::with('organizer')->orderBy('event_date', 'desc')->get();
-        return view('admin.events.index', compact('events'));
+        $schoolEvents = SchoolEvent::with('organizer')->orderBy('event_date', 'desc')->paginate(10);
+        return view('admin.events.index', compact('schoolEvents'));
     }
 
     public function eventCreate()
@@ -146,7 +147,7 @@ class AdminController extends Controller
                      ->whereIn('role', ['admin', 'headteacher', 'teacher', 'dos'])
                      ->orderBy('firstName')
                      ->get();
-                     
+
         return view('admin.events.create', compact('users'));
     }
 
@@ -161,9 +162,9 @@ class AdminController extends Controller
             'location' => ['nullable', 'string', 'max:255'],
             'organizer_id' => ['required', 'exists:users,id'],
         ]);
-        
+
         SchoolEvent::create($validatedData);
-        
+
         return redirect()->route('admin.events.index')
             ->with('success', 'Event created successfully.');
     }
@@ -181,14 +182,14 @@ class AdminController extends Controller
                      ->whereIn('role', ['admin', 'headteacher', 'teacher', 'dos'])
                      ->orderBy('firstName')
                      ->get();
-                     
+
         return view('admin.events.edit', compact('schoolEvent', 'users'));
     }
 
     public function eventUpdate(Request $request, $id)
     {
         $schoolEvent = SchoolEvent::findOrFail($id);
-        
+
         $validatedData = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
@@ -198,9 +199,9 @@ class AdminController extends Controller
             'location' => ['nullable', 'string', 'max:255'],
             'organizer_id' => ['required', 'exists:users,id'],
         ]);
-        
+
         $schoolEvent->update($validatedData);
-        
+
         return redirect()->route('admin.events.index')
             ->with('success', 'Event updated successfully.');
     }
@@ -209,7 +210,7 @@ class AdminController extends Controller
     {
         $schoolEvent = SchoolEvent::findOrFail($id);
         $schoolEvent->delete();
-        
+
         return redirect()->route('admin.events.index')
             ->with('success', 'Event deleted successfully.');
     }
